@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apartment Showcase</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .apartment-card {
+            margin-bottom: 30px;
+            transition: transform 0.3s;
+        }
+        .apartment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .carousel-inner {
+            border-radius: 5px 5px 0 0;
+            height: 250px;
+        }
+        .carousel-item img {
+            height: 250px;
+            object-fit: cover;
+        }
+        .badge {
+            margin-right: 5px;
+        }
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .booking-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .header {
+            background-color: #2b2d42;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        .logo {
+            height: 60px;
+            margin-right: 15px;
+        }
+        .visit-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            padding: 15px 25px;
+            font-size: 16px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .modal-form label {
+            margin-top: 10px;
+        }
+        #visitModal .modal-body {
+            padding: 20px;
+        }
+        @media (max-width: 768px) {
+            .visit-btn {
+                right: 20px;
+                bottom: 20px;
+                padding: 10px 20px;
+            }
+            .logo {
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Logo -->
+    <div class="header">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-center mb-3">
+                <img src="RandC.png" alt="Luxury Apartments Logo" class="logo">
+                <h1 class="mb-0">R & C Apartments</h1>
+            </div>
+            <p class="text-center">Find your perfect home with us</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Booking Section -->
+        <div class="booking-section">
+            <h2 class="mb-4">Check Availability</h2>
+            <form id="booking-form">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="check-in" class="form-label">Move-in Date</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control datepicker" id="check-in" placeholder="Select date">
+                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="lease-duration" class="form-label">Lease Duration</label>
+                        <select class="form-select" id="lease-duration">
+                            <option value="6">6 months</option>
+                            <option value="12" selected>12 months</option>
+                            <option value="18">18 months</option>
+                            <option value="24">24 months</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="apartment-type" class="form-label">Apartment Type</label>
+                        <select class="form-select" id="apartment-type">
+                            <option value="all" selected>All Types</option>
+                            <option value="studio">1-Bedroom</option>
+                            <option value="1bed">Balcony Bedroom</option>
+                            <option value="2bed">Luxury Bedroom</option>
+                        </select>
+                    </div>
+                    <div class="col-12 text-center mt-4">
+                        <button type="submit" class="btn btn-primary px-4">Search Apartments</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Apartments Grid -->
+        <h2 class="mb-4">Available Apartments</h2>
+        <div class="row" id="apartments-container">
+            <!-- Apartments will be dynamically populated here -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p>© 2025 R & C Apartments. All rights reserved.</p>
+            <p>Contact us: RandCApartments@gmail.com | (02) 672-986 </p>
+        </div>
+    </footer>
+
+    <!-- Floating Visit Button -->
+    <button class="btn btn-primary visit-btn" data-bs-toggle="modal" data-bs-target="#visitModal">
+        <i class="fas fa-calendar-check me-2"></i> Schedule Visit
+    </button>
+
+    <!-- Visit Scheduling Modal -->
+    <div class="modal fade" id="visitModal" tabindex="-1" aria-labelledby="visitModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="visitModalLabel">Schedule a Visit</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="visit-form" class="modal-form">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Personal Information</h5>
+                                <div class="mb-3">
+                                    <label for="full-name" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="full-name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Visit Details</h5>
+                                <div class="mb-3">
+                                    <label for="visit-date" class="form-label">Preferred Date</label>
+                                    <input type="text" class="form-control datepicker" id="visit-date" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="visit-time" class="form-label">Preferred Time</label>
+                                    <select class="form-select" id="visit-time" required>
+                                        <option value="" selected disabled>Select a time</option>
+                                        <option value="9:00 AM">9:00 AM</option>
+                                        <option value="10:00 AM">10:00 AM</option>
+                                        <option value="11:00 AM">11:00 AM</option>
+                                        <option value="12:00 PM">12:00 PM</option>
+                                        <option value="1:00 PM">1:00 PM</option>
+                                        <option value="2:00 PM">2:00 PM</option>
+                                        <option value="3:00 PM">3:00 PM</option>
+                                        <option value="4:00 PM">4:00 PM</option>
+                                        <option value="5:00 PM">5:00 PM</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="apartment-interest" class="form-label">Interested In</label>
+                                    <select class="form-select" id="apartment-interest" required>
+                                        <option value="" selected disabled>Select apartment type</option>
+                                        <option value="studio">1-Bedroom</option>
+                                        <option value="1bed">Balcony Bedroom</option>
+                                        <option value="2bed">Luxury Bedroom</option>
+                                        <option value="multiple">Multiple Types</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <div class="mb-3">
+                                    <label for="comments" class="form-label">Additional Comments</label>
+                                    <textarea class="form-control" id="comments" rows="3"></textarea>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="guided-tour" checked>
+                                    <label class="form-check-label" for="guided-tour">
+                                        I'd like a guided tour with a property manager
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submit-visit">Schedule My Visit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+    <script>
+        // Sample apartment data - only three rooms
+        const apartments = [
+            {
+                id: 1,
+                name: "1-Bedroom",
+                type: "1bed",
+                price: 5000,
+                size: 25,
+                amenities: ["Air Conditioning", "High-Speed WiFi", "Modern Kitchen"],
+                description: "Modern studio apartment that is perfect for 1 person.",
+                images: ["OneBedroom.jpeg"]
+            },
+            {
+                id: 2,
+                name: "Balcony Bedroom",
+                type: "1bed",
+                price: 5500,
+                size: 30,
+                amenities: ["Balcony", "Walk-in Closet", "Stainless Steel Appliances"],
+                description: "Beautiful 1-bedroom with a private balcony and premium finishes.",
+                images: ["apartment2.jpg"]
+            },
+            {
+                id: 3,
+                name: "Luxury Bedroom",
+                type: "2bed",
+                price: 6000,
+                size: 40,
+                amenities: ["Two Bathrooms", "Walk-in Closets", "Open Plan Living"],
+                description: "Spacious King sized bed perfect for two people.",
+                images: ["LuxuryRoom.jpeg"]
+            }
+        ];
+
+        // Initialize datepickers
+        $(document).ready(function() {
+            $('.datepicker').datepicker({
+                format: 'mm/dd/yyyy',
+                startDate: 'today',
+                autoclose: true
+            });
+
+            // Display all apartments on load
+            displayApartments(apartments);
+
+            // Handle form submission
+            $('#booking-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const moveInDate = $('#check-in').val();
+                const leaseDuration = $('#lease-duration').val();
+                const apartmentType = $('#apartment-type').val();
+                
+                // Filter apartments
+                let filteredApartments = apartments;
+                if (apartmentType !== 'all') {
+                    filteredApartments = apartments.filter(apt => apt.type === apartmentType);
+                }
+                
+                // Display filtered apartments with price adjustment based on lease duration
+                displayApartments(filteredApartments, leaseDuration, moveInDate);
+                
+                // Scroll to apartments section
+                $('html, body').animate({
+                    scrollTop: $("#apartments-container").offset().top - 100
+                }, 500);
+            });
+
+            // Handle visit form submission
+            $('#submit-visit').on('click', function() {
+                const form = document.getElementById('visit-form');
+                
+                // Basic form validation
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+                
+                // Get form values
+                const name = $('#full-name').val();
+                const email = $('#email').val();
+                const phone = $('#phone').val();
+                const visitDate = $('#visit-date').val();
+                const visitTime = $('#visit-time').val();
+                const apartmentInterest = $('#apartment-interest').val();
+                const comments = $('#comments').val();
+                const guidedTour = $('#guided-tour').is(':checked');
+                
+                // In a real application, this data would be sent to a server
+                // For this example, we'll just show a success message
+                
+                // Close the modal
+                $('#visitModal').modal('hide');
+                
+                // Show confirmation
+                alert(`Thank you, ${name}! Your visit has been scheduled for ${visitDate} at ${visitTime}. We'll send confirmation details to ${email}.`);
+                
+                // Reset the form
+                form.reset();
+            });
+        });
+
+        // Function to display apartments
+        function displayApartments(apartmentsToShow, leaseDuration = 12, moveInDate = null) {
+            const container = $('#apartments-container');
+            container.empty();
+
+            if (apartmentsToShow.length === 0) {
+                container.html('<div class="col-12 text-center"><p class="fs-5">No apartments match your criteria. Please try different search parameters.</p></div>');
+                return;
+            }
+
+            apartmentsToShow.forEach(apt => {
+                // Adjust price based on lease duration
+                let adjustedPrice = apt.price;
+                if (leaseDuration == 6) {
+                    adjustedPrice = Math.round(apt.price * 1.1); // 10% more expensive for short-term
+                } else if (leaseDuration == 18) {
+                    adjustedPrice = Math.round(apt.price * 0.95); // 5% discount
+                } else if (leaseDuration == 24) {
+                    adjustedPrice = Math.round(apt.price * 0.9); // 10% discount
+                }
+
+                // Create card HTML
+                const card = `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card apartment-card">
+                            <div id="carousel-${apt.id}" class="carousel slide" data-bs-ride="false">
+                                <div class="carousel-inner">
+                                    ${apt.images.map((img, index) => `
+                                        <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                                            <img src="${img}" class="d-block w-100" alt="${apt.name} Image ${index + 1}">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${apt.id}" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-${apt.id}" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <h4 class="card-title">${apt.name}</h4>
+                                <p class="text-muted">${apt.size} sq ft</p>
+                                <p class="card-text">${apt.description}</p>
+                                <div class="mb-3">
+                                    ${apt.amenities.map(amenity => `<span class="badge bg-light text-dark">${amenity}</span>`).join('')}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price">₱${adjustedPrice}/month</span>
+                                    <button class="btn btn-outline-primary" onclick="bookApartment(${apt.id})">Book Now</button>
+                                </div>
+                                ${moveInDate ? `<p class="text-success mt-2">Available for move-in on ${moveInDate}</p>` : ''}
+                                <button class="btn btn-outline-success w-100 mt-3" onclick="scheduleVisit('${apt.type}')">
+                                    <i class="fas fa-building me-2"></i>Schedule a Visit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.append(card);
+            });
+        }
+
+        // Function to handle booking
+        function bookApartment(id) {
+            const apartment = apartments.find(apt => apt.id === id);
+            const moveInDate = $('#check-in').val() || 'selected date';
+            const leaseDuration = $('#lease-duration').val() || '12';
+
+            if (confirm(`Would you like to book ${apartment.name} for ${leaseDuration} months starting on ${moveInDate}?`)) {
+                alert('Booking successful! Our representative will contact you shortly with further details.');
+            }
+        }
+
+        // Function to open visit modal with preselected apartment type
+        function scheduleVisit(apartmentType) {
+            $('#apartment-interest').val(apartmentType);
+            $('#visitModal').modal('show');
+        }
+    </script>
+</body>
+</html>
